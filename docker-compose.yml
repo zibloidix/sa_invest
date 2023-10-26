@@ -1,0 +1,26 @@
+version: '3.7'
+
+services:
+  invest_crm_api:
+    build: .
+    command: uvicorn main:app --host 0.0.0.0 --port 80
+    volumes:
+      - ./src:/app
+    ports:
+      - 8000:80
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15.0-alpine
+    volumes:
+      - invest_crm_postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=invest_crm
+      - POSTGRES_PASSWORD=fdc804cd
+      - POSTGRES_DB=invest_crm
+    ports: 
+      - 5433:5432
+
+volumes:
+  invest_crm_postgres_data:
