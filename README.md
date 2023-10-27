@@ -13,3 +13,4 @@
 - [Статусная модель проекта](./docs/images/states_projects.png)
 - [Логическая модель](./docs/images/erd.png)
 - [Логическая модель на dbdocs.io](https://dbdocs.io/zibloidix/invest_big)
+- [Логическая модель schema.dbml](./docs/schema.dbml) 

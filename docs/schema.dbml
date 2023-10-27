@@ -1,0 +1,225 @@
+Enum role_code_type {
+  ADMIN                [note: 'Администратор системы']
+  PROJECT_EDITOR       [note: 'Редактирование сущности Проект']
+  PROJECT_VIEWER       [note: 'Чтение сущности Проект']
+  REPORT_EXPORTER_ALL  [note: 'Выгрузка всех отчетов']
+}
+
+Enum project_state_type {
+  APPLICANTION_SHORT   [note: 'Неполная заявка']
+  APPLICANTION_FULL    [note: 'Полная заявка']
+  DELETED              [note: 'Удалено']
+  ENDED                [note: 'Завершено']
+  FREEZE               [note: 'Приостановлено']
+  ARCHIVE              [note: 'В архиве']
+  PROJECT_IN_COMISSION [note: 'Заявка на рассмотрении комиссии']
+  PROJECT_ON_SUPPORT   [note: 'Проект на сопровождении']
+}
+
+Enum support_type {
+  FINANCE [note: 'Финансовая поддержка']
+  CREDIT  [note: 'Кредитная поддержка']
+  EARTH   [note: 'Земельная поддержка']
+  EQUIP   [note: 'Оборудование']
+  TECH    [note: 'Техническая поддержка']
+}
+
+Enum unit_type {
+  RUB            [note: 'Рубли']
+  PIECES         [note: 'Штуки']
+  METERS         [note: 'Метры']
+  METERS_CUBIC   [note: 'Метры квадратные']
+  METERS_SQUARE  [note: 'Метры кубические']
+  HECTARES       [note: 'Гектары']
+}
+
+Enum programm_level_type {
+  FEDERAL   [note: 'Федеральная программа']
+  REGION    [note: 'Региональная программа']
+  MUNICIPAL [note: 'Миниципальная программа']
+}
+
+Enum decision_type {
+    EG  [note: "Решение экспертной группы"]
+    MVK [note: "Решение межведомственной комиссии"]
+}
+
+Table user {
+  id int [pk]
+  role_code role_code_type [note: 'Роль пользователя']
+  Note: '''
+    Пользователи системы
+  '''
+}
+
+Table district_id {
+  id int [pk]
+  name text [note: 'Наименование района']
+  Note: '''
+    Справочник. Районы Сахалинской области
+  '''
+}
+
+Table city {
+  id int [pk]
+  name text [note: 'Наименование населенного пункта']
+  Note: '''
+    Справочник. Населенные пункты Сахалинской области
+  '''
+}
+
+Table project {
+  id int [pk]
+  user_id int [unique]
+  owner_id int [unique]
+  address_id int [unique]
+  industry_id int [unique]
+  name text [note: 'Название проекта']
+  application_own_amount decimal [note: 'Собственная сумма. Заполняет сотрудник. Источник Клиент. По звонку или по заявлению']
+  application_support_amount decimal [note: 'Запрашиваемая сумма. Заполняет сотрудник. Источник Клиент. По звонку или по заявлению']
+  work_place_count int [note: 'Количество рабочих мест. Заполняет сотрудник. Источник Клиент. По звонку или по заявлению']
+  nalog_amount int [note: 'Налоги, отчисляемые в бюджет. Заполняет сотрудник. Источник Клиент. По звонку или по заявлению']
+  description text [note: 'Описание проекта. Заполняет сотрудник. Источник Клиент. По звонку или по заявлению']
+  state project_state_type [note: 'Состояние проекта']
+  Note: '''
+    Проект
+  '''
+}
+
+Table business_org {
+  id int [pk]
+  address_id int [unique]
+  name text [note: 'Полное наименование']
+  name_short text [note: 'Сокращенное наименование']
+  inn text [note: 'ИНН']
+  ogrn text [note: 'ОГРН']
+  Note: '''
+    Клиент - юридическое лицо
+  '''
+}
+
+Table business_man {
+  id int [pk]
+  address_id int [unique]
+  last_name text [note: 'Фамилия']
+  first_name text [note: 'Имя']
+  middle_name text [note: 'Отчество']
+  inn text [note: 'ИНН']
+  ogrn text [note: 'ОГРН']
+  Note: '''
+    Клиент - ИП или физическое лицо
+  '''
+}
+
+Table owner {
+  id int [pk]
+  business_org_id int [unique]
+  business_man_id int [unique]
+  Note: '''
+    Сущность владельца проектом
+  '''
+}
+
+Table owner_contact {
+  id int [pk]
+  owner_id int [unique]
+  Note: '''
+    Контакты владельца проектом
+  '''
+}
+
+Table support {
+  id int [pk]
+  project_id int [unique, note: 'ID проекта к которому относится поддержка']
+  support_programm_id int [unique, note: 'ID государственной программы, по которой выделяется поддержка']
+  support_org_id int [unique, note: 'ID государственного органа, выделяющего поддержку']
+  date_start date [note: 'Дата начала выделения поддержки']
+  date_end date [note: 'Дата окончания выделения поддержки']
+  type_code support_type [note: 'Вид поддержки']
+  amount decimal [note: 'Размер поддержки']
+  unit unit_type
+  desc text [note: 'Описание']
+  Note: '''
+    Поддержка по проекту
+  '''
+}
+
+Table support_programm {
+  id int [pk]
+  name text [note: 'Наименование программы']
+  active boolean [note: 'Признак активности программы']
+  level_type_code  programm_level_type [note: 'Уровень программы']
+  Note: '''
+    Справочник. Федеральные, региональные и муниципальные программы поддержки
+  '''
+}
+
+Table support_org {
+  id int [pk]
+  name text
+  Note: '''
+    Справочник. Министерство, ведомство, оказывающее поддержку
+  '''
+}
+
+Table address {
+  id int [pk]
+  district_id int [unique]
+  city_id int [unique]
+  post_code text [note: "Почтовый индекс"]
+  address text [note: "Улица, дом, квартира, офис"]
+  Note: '''
+    Адреса
+  '''
+}
+
+Table decision {
+  id int [pk]
+  project_id int [unique]
+  decision_type decision_type [note: "Вид решения. Заполняет сотрудник. Источник протокол заседания. По итогам проведения комиссии'"]
+  decision_date date [note: "Дата создания решения. Заполняет сотрудник. Источник протокол заседания. По итогам проведения комиссии"]
+  protocol_number text [note: "Номер протокола. Заполняет сотрудник. Источник протокол заседания. По итогам проведения комиссии"]
+  decision text [note: "Решение. Заполняет сотрудник. Источник протокол заседания. По итогам проведения комиссии"]
+  Note: '''
+    Решения о выделении поддержки
+  '''
+}
+
+Table industry {
+  id int [pk]
+  name text [note: "Наименование индустрии"]
+  Note: '''
+    Справочник. Отрасли экономики
+  '''
+}
+
+
+Ref: "project"."owner_id" > "owner"."id"
+
+Ref: "project"."id" < "support"."project_id"
+
+Ref: "owner_contact"."owner_id" < "owner"."id"
+
+Ref: "project"."address_id" > "address"."id"
+
+Ref: "owner"."business_org_id" < "business_org"."id"
+
+Ref: "business_man"."id" < "owner"."business_man_id"
+
+Ref: "support"."support_org_id" > "support_org"."id"
+
+Ref: "support_programm"."id" < "support"."support_programm_id"
+
+Ref: "decision"."project_id" > "support"."project_id"
+
+Ref: "project"."industry_id" > "industry"."id"
+
+Ref: "address"."district_id" < "district_id"."id"
+
+Ref: "address"."city_id" < "city"."id"
+
+Ref: "business_man"."address_id" < "address"."id"
+
+Ref: "business_org"."address_id" < "address"."id"
+
+Ref: "project"."user_id" > "user"."id"
