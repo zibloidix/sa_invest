@@ -46,6 +46,10 @@ CREATE TYPE "decision_type" AS ENUM (
 
 CREATE TABLE "user" (
   "id" int PRIMARY KEY,
+  "last_name" text,
+  "first_name" text,
+  "middle_name" text,
+  "email" text,
   "role_code" role_code_type
 );
 
@@ -101,7 +105,9 @@ CREATE TABLE "owner" (
 
 CREATE TABLE "owner_contact" (
   "id" int PRIMARY KEY,
-  "owner_id" int UNIQUE
+  "owner_id" int UNIQUE,
+  "phone_no" text,
+  "email" text
 );
 
 CREATE TABLE "support" (
@@ -152,6 +158,14 @@ CREATE TABLE "industry" (
 );
 
 COMMENT ON TABLE "user" IS 'Пользователи системы';
+
+COMMENT ON COLUMN "user"."last_name" IS 'Фамилия';
+
+COMMENT ON COLUMN "user"."first_name" IS 'Имя';
+
+COMMENT ON COLUMN "user"."middle_name" IS 'Отчество';
+
+COMMENT ON COLUMN "user"."email" IS 'Адрес электронной почты';
 
 COMMENT ON COLUMN "user"."role_code" IS 'Роль пользователя';
 
@@ -204,6 +218,10 @@ COMMENT ON COLUMN "business_man"."ogrn" IS 'ОГРН';
 COMMENT ON TABLE "owner" IS 'Сущность владельца проектом';
 
 COMMENT ON TABLE "owner_contact" IS 'Контакты владельца проектом';
+
+COMMENT ON COLUMN "owner_contact"."phone_no" IS 'Номер телефона';
+
+COMMENT ON COLUMN "owner_contact"."email" IS 'Адрес электронной почты';
 
 COMMENT ON TABLE "support" IS 'Поддержка по проекту';
 
